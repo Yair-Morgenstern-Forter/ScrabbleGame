@@ -190,10 +190,10 @@ public class Board {
             sbForword.append(tile.letter);
             sbBack.append(tile.letter);
 
-    
-            while (r >= 0 && r < 15 && c >= 0 && c < 15 && GameBoard[r][c] != null) {
+
+            while (r >= 0 && r < 15 && c >= 0 && c < 15 && GameBoard[r+1][c] != null) {
                 r++;
-                wordTilesDown.add(GameBoard[r][c]);                   
+                wordTilesDown.add(GameBoard[r][c]);
             }
 
             if (wordTilesDown.size() > 1) {
@@ -206,7 +206,7 @@ public class Board {
             r = row;
             c = col;
 
-            while (r >= 0 && r < 15 && c >= 0 && c < 15 && GameBoard[r][c] != null) {
+            while (r >= 0 && r < 15 && c >= 0 && c < 15 && GameBoard[r][c+1] != null) {
                     c++;
                     wordTilesRight.add(GameBoard[r][c]);
                 }                   
@@ -338,7 +338,7 @@ public class Board {
     //     }
     //     return tiles;
     // }
-    
+
     public int getScore(Word word) {
         // Calculate the score for the given word, considering bonus squares
         int score = 0;

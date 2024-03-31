@@ -58,4 +58,14 @@ public class Word {
 		Word other = (Word) obj;
 		return col == other.col && row == other.row && Arrays.equals(tiles, other.tiles) && vertical == other.vertical;
 	}
+
+	public String tileChar(Tile tile){
+		if (tile == null) return "_";
+		return tile.toString();
+	}
+
+	@Override
+	public String toString() {
+		return Arrays.stream(tiles).map(this::tileChar).reduce("", (a, b) -> a + b);
+	}
 }
