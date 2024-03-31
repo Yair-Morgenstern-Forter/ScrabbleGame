@@ -76,7 +76,8 @@ public class MainTrain {
 			bag.put(t);
 
 		Word horn=new Word(get("HORN"), 7, 5, false);
-		if(b.tryPlaceWord(horn)!=14){
+		int hornScore=b.tryPlaceWord(horn);
+		if(hornScore!=14){
 			System.out.println("problem in placeWord for 1st word (-10)");
 		}
 		
@@ -84,11 +85,13 @@ public class MainTrain {
 		//System.out.println(Board.getBoard().getTiles()[7][6]);
 
 		Word farm=new Word(get("FA_M"), 5, 7, true);
-		if(b.tryPlaceWord(farm)!=9)
+		int farmScore =b.tryPlaceWord(farm);
+		if(farmScore != 9)
 			System.out.println("problem in placeWord for 2ed word (-10)");
 
 		Word paste=new Word(get("PASTE"), 9, 5, false);
-		if(b.tryPlaceWord(paste)!=25){
+		int pasteScore = b.tryPlaceWord(paste);
+		if(pasteScore!=25){
 			System.out.println("problem in placeWord for 3ed word (-10)" );
 		}
 			

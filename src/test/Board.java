@@ -152,21 +152,9 @@ public class Board {
                 int r = vertical ? row + i : row;
                 int c = vertical ? col : col + i;
         
-                // Check for horizontal words
-                if (c > 0 && GameBoard[r][c - 1] != null) {
-                    addWordIfValid(words, GameBoard[r][c - 1], r, c - 1, false);
-                }
-                if (c < 14 && GameBoard[r][c + 1] != null) {
-                    addWordIfValid(words, GameBoard[r][c + 1], r, c + 1, false);
-                }
-        
-                // Check for vertical words
-                if (r > 0 && GameBoard[r - 1][c] != null) {
-                    addWordIfValid(words, GameBoard[r - 1][c], r - 1, c, true);
-                }
-                if (r < 14 && GameBoard[r + 1][c] != null) {
-                    addWordIfValid(words, GameBoard[r + 1][c], r + 1, c, true);
-                }
+                if (tiles[i] == null) continue; // we're using a preexisting letter, not creating new words
+
+                addWordIfValid(words, tiles[i], r, c, vertical);
             }
         
             return words;
@@ -179,50 +167,47 @@ public class Board {
             int r = row;
             int c = col;
 
+            if (!vertical) { // if we're vertical we don't want to add vertical words - they're our new word!
+                // Only add horizontals
+                wordTilesTopBottom.add(tile);
+                while (r >= 0 && r < 15 && c >= 0 && c < 15 && GameBoard[r + 1][c] != null) {
+                    r++;
+                    wordTilesTopBottom.add(GameBoard[r][c]);
+                }
+                r = row;
+                while (r >= 0 && r < 15 && c >= 0 && c < 15 && GameBoard[r - 1][c] != null) {
+                    r--;
+                    wordTilesTopBottom.add(0, GameBoard[r][c]);
+                }
 
-            while (r >= 0 && r < 15 && c >= 0 && c < 15 && GameBoard[r-1][c] != null) {
-                r--;
-                wordTilesTopBottom.add(0, GameBoard[r][c]);
-            }
-            wordTilesTopBottom.add(tile);
-            r = row;
-            while (r >= 0 && r < 15 && c >= 0 && c < 15 && GameBoard[r+1][c] != null) {
-                r++;
-                wordTilesTopBottom.add(GameBoard[r][c]);
-            }
+                if (wordTilesTopBottom.size() > 1) {
+                    Tile[] wordTilesArray = wordTilesTopBottom.toArray(new Tile[0]);
+                    Word newWord = new Word(wordTilesArray, r, c, true);
+                    if (dictionaryLegal(newWord)) {
+                        words.add(newWord);
+                    }
+                }
+            } else { // if our new word is horizontal, only add verticals
+                wordTilesLeftToRight.add(tile);
+                while (r >= 0 && r < 15 && c >= 0 && c < 15 && GameBoard[r][c + 1] != null) {
+                    c++;
+                    wordTilesLeftToRight.add(GameBoard[r][c]);
+                }
+                c = col;
+                while (r >= 0 && r < 15 && c >= 0 && c < 15 && GameBoard[r][c - 1] != null) {
+                    c--;
+                    wordTilesLeftToRight.add(0, GameBoard[r][c]);
+                }
 
-            if (wordTilesTopBottom.size() > 1) {
-                Tile[] wordTilesArray = wordTilesTopBottom.toArray(new Tile[0]);
-                Word newWord = new Word(wordTilesArray, vertical ? row : r, vertical ? c : col, vertical);
-                if (dictionaryLegal(newWord)) {
-                    words.add(newWord);
+
+                if (wordTilesLeftToRight.size() > 1) {
+                    Tile[] wordTilesArray = wordTilesLeftToRight.toArray(new Tile[0]);
+                    Word newWord = new Word(wordTilesArray, r, c, false);
+                    if (dictionaryLegal(newWord)) {
+                        words.add(newWord);
+                    }
                 }
             }
-
-
-            r = row;
-            c = col;
-
-            while (r >= 0 && r < 15 && c >= 0 && c < 15 && GameBoard[r][c-1] != null) {
-                c--;
-                wordTilesLeftToRight.add(0, GameBoard[r][c]);
-            }
-            wordTilesLeftToRight.add(tile);
-            c = col;
-            while (r >= 0 && r < 15 && c >= 0 && c < 15 && GameBoard[r][c+1] != null) {
-                c++;
-                wordTilesLeftToRight.add(GameBoard[r][c]);
-            }
-
-
-            if (wordTilesLeftToRight.size() > 1) {
-                Tile[] wordTilesArray = wordTilesLeftToRight.toArray(new Tile[0]);
-                Word newWord = new Word(wordTilesArray, vertical ? row : r, vertical ? c : col, vertical);
-                if (dictionaryLegal(newWord)) {
-                    words.add(newWord);
-                }
-            }
-
         }
     
 
@@ -415,13 +400,12 @@ public class Board {
         if (!boardLegal(word) || !dictionaryLegal(word)) {
             return 0; // Word placement is illegal
         }
-        ArrayList<Word> words;
-        words = getWords(word);
+
+        ArrayList<Word> words = getWords(word);
         int score = 0;
         for (Word word2 : words) {
             score += getScore(word2);
         }
-        //score += getScore(word);
 
         int row = word.getRow();
         int col = word.getCol();
