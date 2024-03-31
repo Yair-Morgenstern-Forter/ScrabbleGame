@@ -173,84 +173,54 @@ public class Board {
         }
     
         private void addWordIfValid(ArrayList<Word> words, Tile tile, int row, int col, boolean vertical) {
-            ArrayList<Tile> wordTilesDown = new ArrayList<>();
-            ArrayList<Tile> wordTilesRight = new ArrayList<>();
-            ArrayList<Tile> wordTilesTop = new ArrayList<>();
-            ArrayList<Tile> wordTilesLeft = new ArrayList<>();
-           
-            wordTilesDown.add(tile);
-            wordTilesRight.add(tile);
-            wordTilesTop.add(tile);
-            wordTilesLeft.add(tile);
+            ArrayList<Tile> wordTilesTopBottom = new ArrayList<>();
+            ArrayList<Tile> wordTilesLeftToRight = new ArrayList<>();
 
             int r = row;
             int c = col;
-            StringBuilder sbForword = new StringBuilder();
-            StringBuilder sbBack = new StringBuilder();
-            sbForword.append(tile.letter);
-            sbBack.append(tile.letter);
 
 
+            while (r >= 0 && r < 15 && c >= 0 && c < 15 && GameBoard[r-1][c] != null) {
+                r--;
+                wordTilesTopBottom.add(0, GameBoard[r][c]);
+            }
+            wordTilesTopBottom.add(tile);
+            r = row;
             while (r >= 0 && r < 15 && c >= 0 && c < 15 && GameBoard[r+1][c] != null) {
                 r++;
-                wordTilesDown.add(GameBoard[r][c]);
+                wordTilesTopBottom.add(GameBoard[r][c]);
             }
 
-            if (wordTilesDown.size() > 1) {
-                    Tile[] wordTilesArray = wordTilesDown.toArray(new Tile[0]);
-                    Word newWord = new Word(wordTilesArray, vertical ? row : r, vertical ? c : col, vertical);
-                    if (dictionaryLegal(newWord)) {
-                        words.add(newWord);
-                    }
+            if (wordTilesTopBottom.size() > 1) {
+                Tile[] wordTilesArray = wordTilesTopBottom.toArray(new Tile[0]);
+                Word newWord = new Word(wordTilesArray, vertical ? row : r, vertical ? c : col, vertical);
+                if (dictionaryLegal(newWord)) {
+                    words.add(newWord);
                 }
-            r = row;
-            c = col;
-
-            while (r >= 0 && r < 15 && c >= 0 && c < 15 && GameBoard[r][c+1] != null) {
-                    c++;
-                    wordTilesRight.add(GameBoard[r][c]);
-                }                   
-
-            if (wordTilesRight.size() > 1) {
-                    Tile[] wordTilesArray = wordTilesRight.toArray(new Tile[0]);
-                    Word newWord = new Word(wordTilesArray, vertical ? row : r, vertical ? c : col, vertical);
-                    if (dictionaryLegal(newWord)) {
-                        words.add(newWord);
-                    }
-                }
-    
-            r = row;
-            c = col;
-    
-            while (r >= 0 && r < 15 && c >= 0 && c < 15 && GameBoard[r][c] != null) {
-                r--;
-                wordTilesTop.add(GameBoard[r][c]);
             }
 
-                if (wordTilesTop.size() > 1) {
-                    Collections.reverse(wordTilesTop);
-                    Tile[] wordTilesArray = wordTilesTop.toArray(new Tile[0]);
-                    Word newWord = new Word(wordTilesArray, vertical ? row : r, vertical ? c : col, vertical);
-                    if (dictionaryLegal(newWord)) {
-                        words.add(newWord);
-                    }
-            }
 
             r = row;
             c = col;
 
-            while (r >= 0 && r < 15 && c >= 0 && c < 15 && GameBoard[r][c] != null) {
+            while (r >= 0 && r < 15 && c >= 0 && c < 15 && GameBoard[r][c-1] != null) {
                 c--;
-                wordTilesLeft.add(GameBoard[r][c]);
+                wordTilesLeftToRight.add(0, GameBoard[r][c]);
+            }
+            wordTilesLeftToRight.add(tile);
+            c = col;
+            while (r >= 0 && r < 15 && c >= 0 && c < 15 && GameBoard[r][c+1] != null) {
+                c++;
+                wordTilesLeftToRight.add(GameBoard[r][c]);
             }
 
-                if (wordTilesLeft.size() > 1) {
-                    Collections.reverse(wordTilesLeft);
-                    Tile[] wordTilesArray = wordTilesLeft.toArray(new Tile[0]);
-                    Word newWord = new Word(wordTilesArray, vertical ? row : r, vertical ? c : col, vertical);
-                    if (dictionaryLegal(newWord)) {
-                        words.add(newWord);
-                    }
+
+            if (wordTilesLeftToRight.size() > 1) {
+                Tile[] wordTilesArray = wordTilesLeftToRight.toArray(new Tile[0]);
+                Word newWord = new Word(wordTilesArray, vertical ? row : r, vertical ? c : col, vertical);
+                if (dictionaryLegal(newWord)) {
+                    words.add(newWord);
+                }
             }
 
         }
